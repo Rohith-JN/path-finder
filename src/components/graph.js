@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // Added useCallback
 import {
   ReactFlow,
   useNodesState,
@@ -8,51 +8,74 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { latLngToCell, gridDisk } from 'h3-js';
+import styles from '@/styles/Home.module.css'; // Assuming you have button styles here
 
-// Inside your GraphVisualizer component
+// Simple LogBox component (can be in the same file or separate)
+function LogBox({ messages }) {
+  return (
+    <div
+      style={{
+        height: '100%', // Fill parent
+        overflowY: 'auto', // Allow scrolling
+        backgroundColor: '#222', // Dark background
+        color: '#eee', // Light text
+        padding: '10px',
+        fontFamily: 'monospace', // Use a fixed-width font
+        fontSize: '12px',
+        borderLeft: '1px solid #444', // Separator line
+        borderRadius: '10px',
+      }}
+    >
+      <h4
+        style={{
+          marginTop: 0,
+          borderBottom: '1px solid #444',
+          paddingBottom: '5px',
+        }}
+      >
+        Event Log
+      </h4>
+      {messages.length === 0 ? (
+        <p>No events yet...</p>
+      ) : (
+        // Display messages, newest first
+        messages.map((msg, index) => (
+          <div key={index} style={{ marginBottom: '5px' }}>
+            {msg}
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
 
-/**
- * A simple (but slow) "Priority Queue" for Dijkstra's
- * It's just an array that we sort every time.
- * For a few hundred nodes, this is fine for visualization.
- */
+// --- Dijkstra's Algorithm and Priority Queue ---
 class SimplePriorityQueue {
   constructor() {
     this._queue = [];
   }
-
   enqueue(node, priority) {
     this._queue.push({ node, priority });
     this.sort();
   }
-
   dequeue() {
     return this._queue.shift();
   }
-
   isEmpty() {
     return this._queue.length === 0;
   }
-
   sort() {
     this._queue.sort((a, b) => a.priority - b.priority);
   }
 }
 
-/**
- * Runs Dijkstra's algorithm
- * @param {Map} graph - Your Adjacency List
- * @param {string} startNode - The starting node ID
- * @param {string} endNode - The ending node ID
- * @returns {object} - { path, visitedNodesInOrder }
- */
 function dijkstra(graph, startNode, endNode) {
   const distances = new Map();
   const previousNodes = new Map();
   const pq = new SimplePriorityQueue();
-  const visitedNodesInOrder = []; // For animation
+  const visitedNodesInOrder = [];
 
-  // Initialize distances
   for (const node of graph.keys()) {
     distances.set(node, Infinity);
     previousNodes.set(node, null);
@@ -63,24 +86,14 @@ function dijkstra(graph, startNode, endNode) {
 
   while (!pq.isEmpty()) {
     const { node: currentNode } = pq.dequeue();
-
-    // We've already processed this node, skip
-    if (visitedNodesInOrder.includes(currentNode)) {
-      continue;
-    }
-
+    if (visitedNodesInOrder.includes(currentNode)) continue;
     visitedNodesInOrder.push(currentNode);
-
-    // If we found the end, we're done
-    if (currentNode === endNode) {
-      break;
-    }
+    if (currentNode === endNode) break;
 
     const neighbors = graph.get(currentNode) || [];
     for (const neighbor of neighbors) {
       const { node: neighborNode, weight } = neighbor;
       const newDist = distances.get(currentNode) + weight;
-
       if (newDist < distances.get(neighborNode)) {
         distances.set(neighborNode, newDist);
         previousNodes.set(neighborNode, currentNode);
@@ -89,230 +102,454 @@ function dijkstra(graph, startNode, endNode) {
     }
   }
 
-  // Reconstruct the path
   const path = [];
   let currentNode = endNode;
   while (currentNode !== null && previousNodes.get(currentNode) !== undefined) {
     path.unshift(currentNode);
     currentNode = previousNodes.get(currentNode);
   }
-
-  // Add the start node if a path was found
   if (path.length > 0 || startNode === endNode) {
     path.unshift(startNode);
   }
 
-  return { path: new Set(path), visitedNodesInOrder };
+  const finalDistance = distances.get(endNode);
+
+  return {
+    // Return BOTH the Set (for quick lookup) and Array (for order)
+    pathSet: new Set(path), // Changed key name for clarity
+    pathArray: path, // Added ordered path array
+    visitedNodesInOrder,
+    distance: finalDistance,
+  };
 }
+// --- End Algorithm ---
 
-// --- (Add the SimplePriorityQueue and dijkstra functions from above) ---
-// (Copy/paste them here)
-
-function GraphVisualizer({ data }) {
+function GraphVisualizer() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // --- State ---
   const [adjacencyList, setAdjacencyList] = useState(new Map());
-  const [startNode, setStartNode] = useState(null);
-  const [endNode, setEndNode] = useState(null);
+  const [nodeToH3Map, setNodeToH3Map] = useState(new Map());
+  // No need for h3ToNodesMap currently
 
-  // --- Visualization State ---
+  // Simulation State
+  const [drivers, setDrivers] = useState([]);
+  const [rider, setRider] = useState(null);
+  const [destinationNode, setDestinationNode] = useState(null);
+  const [candidateDrivers, setCandidateDrivers] = useState(new Set());
+
+  // Visualization State
+  const [startNode, setStartNode] = useState(null); // Final assigned driver
+  const [endNode, setEndNode] = useState(null); // Final destination
   const [visitedNodes, setVisitedNodes] = useState(new Set());
-  const [shortestPath, setShortestPath] = useState(new Set());
+  const [shortestPathNodes, setShortestPathNodes] = useState([]); // Use array for final path
+  const [clickMode, setClickMode] = useState('none');
+
+  const [logMessages, setLogMessages] = useState([]);
 
   const { fitView } = useReactFlow();
 
-  // --- 1. Load Data and Build Adjacency List ---
+  const addLog = useCallback((message) => {
+    // Get current time for timestamp
+    const timestamp = new Date().toLocaleTimeString();
+    setLogMessages((prevLogs) => [`[${timestamp}] ${message}`, ...prevLogs]); // Add new message to the top
+  }, []); // useCallback ensures this function doesn't change unnecessarily
+
+  // --- Load Data and Build Indexes ---
   useEffect(() => {
-    if (data) {
-      // Build Adjacency List
-      const adjList = new Map();
-      data.links.forEach((edge) => {
-        const { source, target, length } = edge;
+    fetch('/sperryville_graph.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const h3Resolution = 9;
+        const nodeMap = new Map();
+        const adjList = new Map();
 
-        // Use string IDs
-        const sourceStr = String(source);
-        const targetStr = String(target);
+        // Build H3 Map and Adjacency List
+        data.nodes.forEach((node) => {
+          const h3Index = latLngToCell(node.y, node.x, h3Resolution);
+          nodeMap.set(String(node.id), h3Index);
+        });
+        data.links.forEach((edge) => {
+          const { source, target, length } = edge;
+          const sourceStr = String(source);
+          const targetStr = String(target);
+          if (!adjList.has(sourceStr)) adjList.set(sourceStr, []);
+          if (!adjList.has(targetStr)) adjList.set(targetStr, []);
+          adjList.get(sourceStr).push({ node: targetStr, weight: length });
+          adjList.get(targetStr).push({ node: sourceStr, weight: length });
+        });
+        setNodeToH3Map(nodeMap);
+        setAdjacencyList(adjList);
 
-        if (!adjList.has(sourceStr)) adjList.set(sourceStr, []);
-        if (!adjList.has(targetStr)) adjList.set(targetStr, []);
+        // Normalize Positions
+        let minX = Infinity,
+          minY = Infinity;
+        data.nodes.forEach((node) => {
+          if (node.x < minX) minX = node.x;
+          if (node.y < minY) minY = node.y;
+        });
+        const SCALE = 50000;
+        const initialNodes = data.nodes.map((node) => ({
+          id: String(node.id),
+          position: {
+            x: (node.x - minX) * SCALE,
+            y: (node.y - minY) * SCALE * -1,
+          },
+          data: { label: String(node.id) },
+        }));
+        const initialEdges = data.links.map((edge, i) => ({
+          id: `e-${i}-${String(edge.source)}-${String(edge.target)}`,
+          source: String(edge.source),
+          target: String(edge.target),
+        }));
 
-        adjList.get(sourceStr).push({ node: targetStr, weight: length });
-        adjList.get(targetStr).push({ node: sourceStr, weight: length }); // Assuming undirected
+        setNodes(initialNodes);
+        setEdges(initialEdges);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch graph data:', err);
+        setIsLoading(false);
       });
-      setAdjacencyList(adjList);
+  }, [setNodes, setEdges]); // Dependencies
 
-      // --- Normalize and Scale Node Positions ---
-      let minX = Infinity,
-        minY = Infinity;
-      data.nodes.forEach((node) => {
-        if (node.x < minX) minX = node.x;
-        if (node.y < minY) minY = node.y;
-      });
-
-      const SCALE = 50000;
-      const initialNodes = data.nodes.map((node) => ({
-        id: String(node.id),
-        position: {
-          x: (node.x - minX) * SCALE,
-          y: (node.y - minY) * SCALE * -1,
-        },
-        data: { label: String(node.id) },
-      }));
-
-      const initialEdges = data.links.map((edge, i) => ({
-        id: `e-${i}-${String(edge.source)}-${String(edge.target)}`,
-        source: String(edge.source),
-        target: String(edge.target),
-      }));
-
-      setNodes(initialNodes);
-      setEdges(initialEdges);
-      setIsLoading(false);
-    }
-  }, [data, setNodes, setEdges]); // Add setters as dependencies
-
-  // --- 2. Handle User Clicks ---
+  // --- Handle Node Clicks ---
   const handleNodeClick = useCallback(
     (event, node) => {
-      if (!startNode) {
-        setStartNode(node.id);
-      } else if (!endNode) {
-        setEndNode(node.id);
+      // Use useCallback
+      if (nodeToH3Map.size === 0) return;
+      const key = String(node.id);
+      const h3Index = nodeToH3Map.get(key);
+      if (!h3Index) {
+        console.error(`Could not find H3 index for node: ${key}`);
+        return;
+      }
+
+      if (clickMode === 'addDriver') {
+        const newDriver = {
+          id: `d${drivers.length + 1}`,
+          location: key,
+          h3Index: h3Index,
+        };
+        setDrivers((prev) => [...prev, newDriver]);
+        setClickMode('none');
+        addLog(`Added Driver ${newDriver.id} at node ${key}`);
+        console.log('Added Driver at:', key);
+      } else if (clickMode === 'addRider') {
+        if (rider) return;
+        const newRider = { id: 'r1', pickup: key, pickupH3: h3Index };
+        setRider(newRider);
+        setClickMode('none');
+        addLog(`Added Rider ${newRider.id} at node ${key}`);
+        console.log('Added Rider at:', key);
+      } else if (clickMode === 'setDestination') {
+        if (!rider || destinationNode) return;
+        if (key === rider.pickup) {
+          alert('Destination cannot be the same as pickup.');
+          return;
+        }
+        setDestinationNode(key);
+        setClickMode('none');
+        addLog(`Set Destionation at node ${key}`);
+
+        console.log('Set Destination at:', key);
       }
     },
-    [startNode, endNode]
-  ); // Dependencies for the click handler
+    [clickMode, drivers, rider, destinationNode, nodeToH3Map]
+  ); // Dependencies
 
-  // --- 3. Run and Animate the Algorithm ---
-  // --- 3. Run and Animate the Algorithm ---
-  useEffect(() => {
-    if (!startNode || !endNode || adjacencyList.size === 0) return;
+  // --- Find Match and Route Logic ---
+  // Inside GraphVisualizer component
 
-    // Reset visualization state
-    setVisitedNodes(new Set());
-    setShortestPath(new Set());
-
-    // --- ADD THIS CONSOLE LOG ---
-    console.log("Running Dijkstra's with:", {
-      start: startNode,
-      end: endNode,
-      adjListSize: adjacencyList.size,
-    });
-
-    // Run Dijkstra's
-    const { path, visitedNodesInOrder } = dijkstra(
-      adjacencyList,
-      startNode,
-      endNode
-    );
-
-    // --- ADD THESE CONSOLE LOGS ---
-    console.log("Dijkstra's finished:");
-    console.log('Visited nodes count:', visitedNodesInOrder.length);
-    console.log('Path found:', path);
-
-    // Animate the visited nodes
-    visitedNodesInOrder.forEach((nodeId, index) => {
-      setTimeout(() => {
-        setVisitedNodes((prev) => new Set(prev).add(nodeId));
-      }, index * 300);
-    });
-
-    // Show the final path after the animation
-    setTimeout(() => {
-      setShortestPath(path);
-    }, visitedNodesInOrder.length * 300 + 500);
-  }, [startNode, endNode, adjacencyList, fitView]); // Re-run when selection changes
-
-  // --- 4. Reset Button ---
-  const handleReset = () => {
+  const handleFindMatchAndRouteClick = useCallback(() => {
+    // Use useCallback
+    // --- Reset previous visualization state ---
     setStartNode(null);
     setEndNode(null);
     setVisitedNodes(new Set());
-    setShortestPath(new Set());
-    fitView({ duration: 800 }); // Zoom back out
-  };
+    setShortestPathNodes([]); // Reset to empty array
+    setCandidateDrivers(new Set());
 
-  // --- 5. Dynamically Style Nodes and Edges ---
-  // --- 5. Dynamically Style Nodes and Edges (CORRECTED) ---
+    // --- Initial Checks ---
+    if (!rider || !destinationNode) {
+      alert('Please set a rider and destination first.');
+      return;
+    }
+    if (drivers.length === 0) {
+      alert('Please add at least one driver first.');
+      return;
+    }
+
+    // --- 1. Find Best Driver (Driver -> Pickup) ---
+    addLog(`Finding closest driver for rider at: ${rider.pickup}`);
+
+    console.log('Finding closest driver for rider at:', rider.pickup);
+    let nearbyDrivers = [];
+    let currentRadius = 1;
+    const maxRadius = 10;
+    while (nearbyDrivers.length === 0 && currentRadius <= maxRadius) {
+      const searchHexagons = gridDisk(rider.pickupH3, currentRadius);
+      nearbyDrivers = drivers.filter((d) => searchHexagons.includes(d.h3Index));
+      if (nearbyDrivers.length === 0) {
+        currentRadius++;
+      } else {
+        addLog(`Searching H3 gridDisk with radius ${currentRadius}...`);
+        console.log(`Searching H3 gridDisk with radius ${currentRadius}...`);
+      }
+    }
+
+    if (nearbyDrivers.length === 0) {
+      alert(`No drivers found within H3 radius ${maxRadius}.`);
+      return;
+    }
+
+    const candidateNodeIds = new Set(
+      nearbyDrivers.map((driver) => driver.location)
+    );
+    setCandidateDrivers(candidateNodeIds); // Highlight candidates
+    addLog(
+      `H3 Filter (Radius ${currentRadius}): Found ${nearbyDrivers.length} drivers to check.`
+    );
+    console.log(
+      `H3 Filter (Radius ${currentRadius}): Found ${nearbyDrivers.length} drivers to check.`
+    );
+
+    let bestDriver = null;
+    let minDistanceToRider = Infinity;
+    let pathDriverToRiderResult = null;
+    addLog(`Checking ${nearbyDrivers.length} drivers with Dijkstra...`);
+
+    console.log(`Checking ${nearbyDrivers.length} drivers with Dijkstra...`);
+    for (const driver of nearbyDrivers) {
+      const result = dijkstra(adjacencyList, driver.location, rider.pickup);
+      addLog(
+        `Checked driver ${driver.id} distance: ${Math.round(result.distance)}`
+      );
+
+      console.log(`Checked driver ${driver.id}: Distance = ${result.distance}`);
+      if (
+        result.distance < minDistanceToRider &&
+        result.distance !== Infinity
+      ) {
+        minDistanceToRider = result.distance;
+        bestDriver = driver;
+        pathDriverToRiderResult = result;
+      }
+    }
+
+    setCandidateDrivers(new Set()); // Clear candidate highlights
+
+    if (!bestDriver) {
+      alert('Could not find a valid path for any nearby driver.');
+      return;
+    }
+    addLog(`Best driver found: ${bestDriver.id}`);
+
+    console.log(`Best driver found: ${bestDriver.id}`);
+
+    // --- 2. Find Path (Pickup -> Destination) ---
+    addLog('Finding path from rider pickup to destination...');
+
+    console.log('Finding path from rider pickup to destination...');
+    const resultRiderToDest = dijkstra(
+      adjacencyList,
+      rider.pickup,
+      destinationNode
+    );
+
+    if (resultRiderToDest.distance === Infinity) {
+      alert('Could not find a path from rider pickup to destination.');
+      return;
+    }
+    addLog(
+      `Path found from rider to destination, distance: ${Math.round(
+        resultRiderToDest.distance
+      )}`
+    );
+    console.log(
+      `Path found from rider to destination, distance: ${Math.round(
+        resultRiderToDest.distance
+      )}`
+    );
+
+    // --- 3. Prepare Paths ---
+    const arrPath1 = pathDriverToRiderResult.pathArray; // Use ordered array
+    const arrPath2 = resultRiderToDest.pathArray; // Use ordered array
+
+    if (arrPath1.length === 0 || arrPath2.length === 0) {
+      alert('Error: One path segment is empty.');
+      return;
+    }
+    const fullPathArray = [...arrPath1, ...arrPath2.slice(1)];
+    console.log('Full Path Array:', fullPathArray);
+
+    // --- 4. Animate Visited Nodes (Yellow) ---
+    const combinedVisited = [
+      ...(pathDriverToRiderResult?.visitedNodesInOrder || []),
+      ...(resultRiderToDest?.visitedNodesInOrder || []),
+    ];
+    const uniqueVisitedInOrder = Array.from(new Set(combinedVisited));
+
+    const yellowAnimationDelay = 300; // Speed for yellow nodes (ms per node)
+    const yellowAnimationTotalTime =
+      uniqueVisitedInOrder.length * yellowAnimationDelay;
+
+    uniqueVisitedInOrder.forEach((nodeId, index) => {
+      setTimeout(() => {
+        setVisitedNodes((prev) => new Set(prev).add(nodeId));
+      }, index * yellowAnimationDelay);
+    });
+
+    // --- 5. Animate Red Path AFTER Yellow Animation ---
+    const redAnimationDelay = 300; // Speed for red nodes (ms per node)
+    const delayBeforeRedStarts = 100; // Extra pause (ms) after yellow finishes
+
+    fullPathArray.forEach((nodeId, index) => {
+      setTimeout(() => {
+        // Add the current node to the path state array
+        setShortestPathNodes((prev) => [...prev, nodeId]);
+
+        // Set start/end green highlights when the red path starts drawing
+        if (index === 0) {
+          setStartNode(bestDriver.location);
+          setEndNode(destinationNode);
+        }
+      }, yellowAnimationTotalTime + delayBeforeRedStarts + index * redAnimationDelay); // Calculate delay
+    });
+  }, [rider, destinationNode, drivers, adjacencyList, nodeToH3Map, fitView]); // Dependencies
+
+  // --- Reset Function ---
+  const handleReset = useCallback(() => {
+    // Use useCallback
+    setStartNode(null);
+    setEndNode(null);
+    setVisitedNodes(new Set());
+    setShortestPathNodes([]);
+    setDrivers([]);
+    setRider(null);
+    setCandidateDrivers(new Set());
+    setDestinationNode(null);
+    setClickMode('none');
+    setLogMessages([]);
+  }, [fitView]); // Dependency
+
+  // --- Dynamic Styling ---
   const styledNodes = nodes.map((node) => {
     const isStart = node.id === startNode;
     const isEnd = node.id === endNode;
-    const isPath = shortestPath.has(node.id);
-    const isVisited = visitedNodes.has(node.id);
+    const isPath = shortestPathNodes.includes(node.id); // Check array
+    const isVisited = visitedNodes.has(node.id); // Check Set
+    const isDriver = drivers.some((d) => d.location === node.id);
+    const isRiderPickup = rider?.pickup === node.id;
+    const isDestination = node.id === destinationNode;
+    const isCandidate = candidateDrivers.has(node.id);
 
     let style = { background: '#ffffff', opacity: 1, color: 'black' }; // Default
 
     if (isStart || isEnd) {
       style = { background: '#00ff00', zIndex: 10, color: 'black' }; // Green
     } else if (isPath) {
-      // <--- Path should be checked FIRST
       style = { background: '#ff0000', zIndex: 10, color: 'white' }; // Red
     } else if (isVisited) {
-      // <--- Visited is checked SECOND
-      style = { background: '#ffff00', color: 'black' }; // Yellow
+      // Restore yellow check
+      style = {
+        background: '#ffff00',
+        opacity: 0.8,
+        zIndex: 8,
+        color: 'black',
+      }; // Yellow
+    } else if (isCandidate) {
+      style = { background: '#00ff00', zIndex: 9, color: 'black' }; // Light Green
+    } else if (isRiderPickup) {
+      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Purple
+    } else if (isDestination) {
+      style = { background: '#00ff00', zIndex: 9, color: 'black' }; // Orange
+    } else if (isDriver) {
+      style = { background: '#7f827fff', zIndex: 9, color: 'white' }; // Blue
     }
-
-    // Return a NEW node object with the new style
-    return {
-      ...node,
-      style: { ...node.style, ...style },
-    };
+    return { ...node, style: { ...node.style, ...style } };
   });
 
   const styledEdges = edges.map((edge) => {
-    // An edge is part of the path if BOTH its source and target are in the path
     const isPath =
-      shortestPath.has(edge.source) && shortestPath.has(edge.target);
-
+      shortestPathNodes.includes(edge.source) &&
+      shortestPathNodes.includes(edge.target); // Check array
     let style = { stroke: '#ffffff', strokeWidth: 1, zIndex: 1 }; // Default
-
     if (isPath) {
       style = { stroke: '#ff0000', strokeWidth: 3, zIndex: 5 }; // Red
     }
-
-    // Return a NEW edge object with the new style
-    return {
-      ...edge,
-      style: { ...edge.style, ...style },
-    };
+    return { ...edge, style: { ...edge.style, ...style } };
   });
 
-  if (isLoading) {
-    return <div>Loading Graph...</div>;
+  // --- Loading Check ---
+  if (isLoading || nodeToH3Map.size === 0) {
+    return (
+      <div style={{ padding: '20px' }}>Loading and indexing graph data...</div>
+    );
   }
 
+  // --- Render JSX ---
   return (
-    <div
-      style={{
-        height: '800px',
-        width: '100%',
-        border: '1px solid black',
-      }}
-    >
-      <button
-        onClick={handleReset}
+    <div style={{ height: '800px', width: '100%', border: '1px solid black' }}>
+      <div
         style={{
           position: 'absolute',
           top: 20,
           left: 20,
           zIndex: 10,
-          backgroundColor: 'white',
-          outline: 'none',
-          border: 'none',
-          color: 'black',
-          paddingRight: 10,
-          paddingLeft: 10,
-          paddingTop: 5,
-          paddingBottom: 5,
-          borderRadius: '5px',
+          display: 'flex',
+          gap: '5px',
         }}
       >
-        Reset
-      </button>
+        <button onClick={handleReset} className={styles.simButton}>
+          Reset
+        </button>
+        <button
+          onClick={() => setClickMode('addRider')}
+          className={styles.simButton}
+          disabled={!!rider}
+          style={rider ? { cursor: 'not-allowed', opacity: 0.5 } : {}}
+        >
+          Add Rider
+        </button>
+        <button
+          onClick={() => setClickMode('addDriver')}
+          className={styles.simButton}
+          // 👇 Add this disabled condition
+          disabled={!!destinationNode}
+          // 👇 Add corresponding style
+          style={destinationNode ? { cursor: 'not-allowed', opacity: 0.5 } : {}}
+        >
+          Add Driver
+        </button>
+        <button
+          onClick={() => setClickMode('setDestination')}
+          className={styles.simButton}
+          disabled={!rider || !!destinationNode}
+          style={
+            !rider || destinationNode
+              ? { cursor: 'not-allowed', opacity: 0.5 }
+              : {}
+          }
+        >
+          Set Destination
+        </button>
+        <button
+          onClick={handleFindMatchAndRouteClick}
+          className={styles.simButton}
+          disabled={!rider || !destinationNode || drivers.length === 0}
+          style={
+            !rider || !destinationNode || drivers.length === 0
+              ? { cursor: 'not-allowed', opacity: 0.5 }
+              : {}
+          }
+        >
+          Find Match & Route
+        </button>
+      </div>
+
       <ReactFlow
         nodes={styledNodes}
         edges={styledEdges}
@@ -324,11 +561,18 @@ function GraphVisualizer({ data }) {
         <Controls />
         <Background />
       </ReactFlow>
+      <div
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          zIndex: 10,
+        }}
+      >
+        <LogBox messages={logMessages} />
+      </div>
     </div>
   );
 }
-
-// You must wrap your component in a <ReactFlowProvider> in App.js
-// to use the `useReactFlow` hook.
 
 export default GraphVisualizer;
