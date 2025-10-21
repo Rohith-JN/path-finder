@@ -1,5 +1,10 @@
-import "@/styles/globals.css";
+import '@/styles/globals.css';
+import { ReactFlowProvider } from '@xyflow/react';
 
 export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+  return (
+    <ReactFlowProvider>
+      <Component {...pageProps} />
+    </ReactFlowProvider>
+  );
 }

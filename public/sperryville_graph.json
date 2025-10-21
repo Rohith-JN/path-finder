@@ -1,0 +1,818 @@
+{
+    "directed": true,
+    "multigraph": true,
+    "graph": {
+        "created_date": "2025-10-21 10:24:42",
+        "created_with": "OSMnx 2.0.6",
+        "crs": "epsg:4326",
+        "simplified": true
+    },
+    "nodes": [
+        {
+            "y": 38.6596656,
+            "x": -78.2181686,
+            "street_count": 3,
+            "id": 218196091
+        },
+        {
+            "y": 38.6592896,
+            "x": -78.2163683,
+            "street_count": 1,
+            "id": 218196099
+        },
+        {
+            "y": 38.6581841,
+            "x": -78.2361161,
+            "street_count": 3,
+            "id": 218212264
+        },
+        {
+            "y": 38.658966,
+            "x": -78.2359105,
+            "street_count": 1,
+            "id": 218212351
+        },
+        {
+            "y": 38.6587328,
+            "x": -78.2294176,
+            "street_count": 3,
+            "id": 218218548
+        },
+        {
+            "y": 38.6592476,
+            "x": -78.229528,
+            "street_count": 3,
+            "id": 218218883
+        },
+        {
+            "y": 38.6564796,
+            "x": -78.2250971,
+            "street_count": 3,
+            "id": 218219982
+        },
+        {
+            "y": 38.657039,
+            "x": -78.2259892,
+            "street_count": 3,
+            "id": 218219986
+        },
+        {
+            "y": 38.657436,
+            "x": -78.2266619,
+            "street_count": 3,
+            "id": 218219990
+        },
+        {
+            "y": 38.6576982,
+            "x": -78.2351293,
+            "street_count": 3,
+            "id": 218220967
+        },
+        {
+            "y": 38.658846,
+            "x": -78.2261686,
+            "street_count": 3,
+            "id": 218221479
+        },
+        {
+            "y": 38.6548792,
+            "x": -78.2419667,
+            "street_count": 3,
+            "id": 218221522
+        },
+        {
+            "y": 38.6543058,
+            "x": -78.2451892,
+            "street_count": 3,
+            "id": 218221542
+        },
+        {
+            "y": 38.6575595,
+            "x": -78.2240937,
+            "street_count": 3,
+            "id": 218230640
+        },
+        {
+            "y": 38.6611858,
+            "x": -78.2195944,
+            "street_count": 3,
+            "id": 218235056
+        },
+        {
+            "y": 38.6578577,
+            "x": -78.2263548,
+            "street_count": 3,
+            "id": 218236168
+        },
+        {
+            "y": 38.6591411,
+            "x": -78.2305132,
+            "street_count": 3,
+            "id": 1761676060
+        },
+        {
+            "y": 38.6556212,
+            "x": -78.23957,
+            "street_count": 3,
+            "id": 4590359851
+        },
+        {
+            "y": 38.6557657,
+            "x": -78.2417976,
+            "street_count": 1,
+            "id": 6401451209
+        },
+        {
+            "y": 38.6555578,
+            "x": -78.2424009,
+            "street_count": 3,
+            "id": 6401451218
+        },
+        {
+            "y": 38.6557705,
+            "x": -78.2266365,
+            "street_count": 1,
+            "id": 11682727675
+        },
+        {
+            "y": 38.6560868,
+            "x": -78.2400916,
+            "street_count": 1,
+            "id": 11701272315
+        },
+        {
+            "y": 38.6592276,
+            "x": -78.2291593,
+            "street_count": 3,
+            "id": 11709334474
+        }
+    ],
+    "links": [
+        {
+            "osmid": 20440969,
+            "highway": "residential",
+            "name": "Apple Blossom Lane",
+            "oneway": false,
+            "reversed": false,
+            "length": 161.9712810424698,
+            "source": 218196091,
+            "target": 218196099,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268180000,
+                268180001,
+                20443660
+            ],
+            "highway": "residential",
+            "name": "Water Street",
+            "ref": "SR 1002",
+            "oneway": false,
+            "reversed": true,
+            "length": 604.3288032313117,
+            "bridge": "yes",
+            "source": 218196091,
+            "target": 218230640,
+            "key": 0
+        },
+        {
+            "osmid": 20440969,
+            "highway": "residential",
+            "name": "Apple Blossom Lane",
+            "oneway": false,
+            "reversed": true,
+            "length": 161.97128104246977,
+            "source": 218196099,
+            "target": 218196091,
+            "key": 0
+        },
+        {
+            "osmid": 20442917,
+            "highway": "residential",
+            "name": "Atkins Road",
+            "ref": "SR 651",
+            "oneway": false,
+            "reversed": true,
+            "length": 101.86958383165313,
+            "source": 218212264,
+            "target": 218220967,
+            "key": 0
+        },
+        {
+            "osmid": [
+                1258904152,
+                20442349
+            ],
+            "highway": "residential",
+            "oneway": false,
+            "reversed": false,
+            "length": 220.02024488820697,
+            "source": 218212264,
+            "target": 218212351,
+            "key": 0
+        },
+        {
+            "osmid": [
+                1258904152,
+                20442349
+            ],
+            "highway": "residential",
+            "oneway": false,
+            "reversed": true,
+            "length": 220.02024488820697,
+            "source": 218212351,
+            "target": 218212264,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268179961,
+                20443650,
+                268179964
+            ],
+            "highway": "secondary",
+            "maxspeed": "25 mph",
+            "name": "Main Street",
+            "ref": "SR 1001",
+            "oneway": false,
+            "reversed": false,
+            "length": 106.95690239432409,
+            "bridge": "yes",
+            "source": 218218548,
+            "target": 1761676060,
+            "key": 0
+        },
+        {
+            "osmid": 20443650,
+            "highway": "secondary",
+            "maxspeed": "25 mph",
+            "name": "Main Street",
+            "ref": "SR 1001",
+            "oneway": false,
+            "reversed": true,
+            "length": 280.15681107171173,
+            "source": 218218548,
+            "target": 218219990,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": false,
+            "length": 86.68868587969308,
+            "source": 218218883,
+            "target": 1761676060,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": true,
+            "length": 32.14752647393451,
+            "source": 218218883,
+            "target": 11709334474,
+            "key": 0
+        },
+        {
+            "osmid": 20442862,
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": false,
+            "length": 99.34833993472085,
+            "source": 218219982,
+            "target": 218219986,
+            "key": 0
+        },
+        {
+            "osmid": 20443504,
+            "highway": "residential",
+            "name": "Yates Lane",
+            "oneway": false,
+            "reversed": false,
+            "length": 148.42490514270096,
+            "source": 218219982,
+            "target": 218230640,
+            "key": 0
+        },
+        {
+            "osmid": 20442862,
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": false,
+            "length": 73.22410860260472,
+            "source": 218219986,
+            "target": 218219990,
+            "key": 0
+        },
+        {
+            "osmid": 20442862,
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": true,
+            "length": 99.34833993472085,
+            "source": 218219986,
+            "target": 218219982,
+            "key": 0
+        },
+        {
+            "osmid": 20443320,
+            "highway": "residential",
+            "name": "Farm Lane",
+            "oneway": false,
+            "reversed": false,
+            "length": 161.90794069930075,
+            "source": 218219986,
+            "target": 11682727675,
+            "key": 0
+        },
+        {
+            "osmid": 20442862,
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": true,
+            "length": 73.22410860260473,
+            "source": 218219990,
+            "target": 218219986,
+            "key": 0
+        },
+        {
+            "osmid": 20443650,
+            "highway": "secondary",
+            "maxspeed": "25 mph",
+            "name": "Main Street",
+            "ref": "SR 1001",
+            "oneway": false,
+            "reversed": false,
+            "length": 280.1568110717117,
+            "source": 218219990,
+            "target": 218218548,
+            "key": 0
+        },
+        {
+            "osmid": 20443870,
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": false,
+            "length": 54.12992342606759,
+            "source": 218219990,
+            "target": 218236168,
+            "key": 0
+        },
+        {
+            "osmid": 20442917,
+            "highway": "residential",
+            "name": "Atkins Road",
+            "ref": "SR 651",
+            "oneway": false,
+            "reversed": false,
+            "length": 101.86958383165313,
+            "source": 218220967,
+            "target": 218212264,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": false,
+            "length": 449.4926903494311,
+            "source": 218220967,
+            "target": 4590359851,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": true,
+            "length": 432.50730745463886,
+            "source": 218220967,
+            "target": 1761676060,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268179963,
+                20443798,
+                1394829255
+            ],
+            "highway": "trunk",
+            "lanes": [
+                "2",
+                "3"
+            ],
+            "maxspeed": [
+                "55 mph",
+                "45 mph"
+            ],
+            "name": "Lee Highway",
+            "oneway": false,
+            "ref": "US 211;US 522",
+            "reversed": false,
+            "length": 637.4023441069127,
+            "source": 218221479,
+            "target": 218235056,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268179960,
+                268179965,
+                20443870
+            ],
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": true,
+            "length": 111.44727396575371,
+            "bridge": "yes",
+            "source": 218221479,
+            "target": 218236168,
+            "key": 0
+        },
+        {
+            "osmid": [
+                20442958,
+                1394829254
+            ],
+            "highway": "trunk",
+            "lanes": [
+                "2",
+                "3"
+            ],
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": false,
+            "length": 268.27657147947104,
+            "source": 218221479,
+            "target": 11709334474,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": false,
+            "length": 295.3470184214907,
+            "source": 218221522,
+            "target": 218221542,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": true,
+            "length": 226.44770713291493,
+            "source": 218221522,
+            "target": 4590359851,
+            "key": 0
+        },
+        {
+            "osmid": 463816465,
+            "highway": "residential",
+            "name": "Black Locust Lane",
+            "oneway": false,
+            "reversed": false,
+            "length": 85.00425138214024,
+            "source": 218221522,
+            "target": 6401451218,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": true,
+            "length": 295.3470184214907,
+            "source": 218221542,
+            "target": 218221522,
+            "key": 0
+        },
+        {
+            "osmid": 20443504,
+            "highway": "residential",
+            "name": "Yates Lane",
+            "oneway": false,
+            "reversed": true,
+            "length": 148.42490514270096,
+            "source": 218230640,
+            "target": 218219982,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268180000,
+                268180001,
+                20443660
+            ],
+            "highway": "residential",
+            "name": "Water Street",
+            "ref": "SR 1002",
+            "oneway": false,
+            "reversed": false,
+            "length": 604.3288032313116,
+            "bridge": "yes",
+            "source": 218230640,
+            "target": 218196091,
+            "key": 0
+        },
+        {
+            "osmid": 20443660,
+            "highway": "residential",
+            "name": "Water Street",
+            "ref": "SR 1002",
+            "oneway": false,
+            "reversed": true,
+            "length": 201.66690526558207,
+            "source": 218230640,
+            "target": 218236168,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268179963,
+                20443798,
+                1394829255
+            ],
+            "highway": "trunk",
+            "lanes": [
+                "2",
+                "3"
+            ],
+            "maxspeed": [
+                "55 mph",
+                "45 mph"
+            ],
+            "name": "Lee Highway",
+            "oneway": false,
+            "ref": "US 211;US 522",
+            "reversed": true,
+            "length": 637.4023441069126,
+            "source": 218235056,
+            "target": 218221479,
+            "key": 0
+        },
+        {
+            "osmid": 20443660,
+            "highway": "residential",
+            "name": "Water Street",
+            "ref": "SR 1002",
+            "oneway": false,
+            "reversed": false,
+            "length": 201.6669052655821,
+            "source": 218236168,
+            "target": 218230640,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268179960,
+                268179965,
+                20443870
+            ],
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": false,
+            "length": 111.4472739657537,
+            "bridge": "yes",
+            "source": 218236168,
+            "target": 218221479,
+            "key": 0
+        },
+        {
+            "osmid": 20443870,
+            "highway": "primary",
+            "lanes": "2",
+            "maxspeed": "25 mph",
+            "name": "Sperryville Pike",
+            "ref": "US 522",
+            "oneway": false,
+            "reversed": true,
+            "length": 54.12992342606759,
+            "source": 218236168,
+            "target": 218219990,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": false,
+            "length": 432.50730745463886,
+            "source": 1761676060,
+            "target": 218220967,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": true,
+            "length": 86.68868587969308,
+            "source": 1761676060,
+            "target": 218218883,
+            "key": 0
+        },
+        {
+            "osmid": [
+                268179961,
+                20443650,
+                268179964
+            ],
+            "highway": "secondary",
+            "maxspeed": "25 mph",
+            "name": "Main Street",
+            "ref": "SR 1001",
+            "oneway": false,
+            "reversed": true,
+            "length": 106.95690239432409,
+            "bridge": "yes",
+            "source": 1761676060,
+            "target": 218218548,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": false,
+            "length": 226.44770713291493,
+            "source": 4590359851,
+            "target": 218221522,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": true,
+            "length": 449.49269034943114,
+            "source": 4590359851,
+            "target": 218220967,
+            "key": 0
+        },
+        {
+            "osmid": 463816487,
+            "highway": "residential",
+            "name": "Oventop Mountain Lane",
+            "oneway": false,
+            "reversed": true,
+            "length": 69.64152331646532,
+            "source": 4590359851,
+            "target": 11701272315,
+            "key": 0
+        },
+        {
+            "osmid": 683446363,
+            "highway": "residential",
+            "name": "Deer View Lane",
+            "oneway": false,
+            "reversed": true,
+            "length": 75.14537347198663,
+            "source": 6401451209,
+            "target": 6401451218,
+            "key": 0
+        },
+        {
+            "osmid": 463816465,
+            "highway": "residential",
+            "name": "Black Locust Lane",
+            "oneway": false,
+            "reversed": true,
+            "length": 85.00425138214025,
+            "source": 6401451218,
+            "target": 218221522,
+            "key": 0
+        },
+        {
+            "osmid": 683446363,
+            "highway": "residential",
+            "name": "Deer View Lane",
+            "oneway": false,
+            "reversed": false,
+            "length": 75.14537347198663,
+            "source": 6401451218,
+            "target": 6401451209,
+            "key": 0
+        },
+        {
+            "osmid": 20443320,
+            "highway": "residential",
+            "name": "Farm Lane",
+            "oneway": false,
+            "reversed": true,
+            "length": 161.90794069930072,
+            "source": 11682727675,
+            "target": 218219986,
+            "key": 0
+        },
+        {
+            "osmid": 463816487,
+            "highway": "residential",
+            "name": "Oventop Mountain Lane",
+            "oneway": false,
+            "reversed": false,
+            "length": 69.64152331646534,
+            "source": 11701272315,
+            "target": 4590359851,
+            "key": 0
+        },
+        {
+            "osmid": 20442958,
+            "highway": "trunk",
+            "lanes": "2",
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": false,
+            "length": 32.14752647393451,
+            "source": 11709334474,
+            "target": 218218883,
+            "key": 0
+        },
+        {
+            "osmid": [
+                1394829254,
+                20442958
+            ],
+            "highway": "trunk",
+            "lanes": [
+                "2",
+                "3"
+            ],
+            "maxspeed": "45 mph",
+            "ref": "US 211",
+            "oneway": false,
+            "reversed": true,
+            "length": 268.27657147947104,
+            "source": 11709334474,
+            "target": 218221479,
+            "key": 0
+        }
+    ]
+}
