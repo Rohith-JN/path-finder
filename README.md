@@ -1,40 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Ride-Pooling Simulation with H3 & Dijkstra's Algorithm
 
-## Getting Started
+## 🗺️ Description
 
-First, run the development server:
+This project is a web-based simulation demonstrating a simplified ride-pooling assignment system. Users can place drivers and a rider (with a pickup and destination) onto a real-world road network graph derived from OpenStreetMap data. The simulation then uses the H3 geospatial index to efficiently find nearby drivers and Dijkstra's algorithm to determine the shortest path for the assigned driver to pick up the rider and proceed to the destination. The process is visualized using `@xyflow/react`.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<img width="1600" height="732" alt="image" src="https://github.com/user-attachments/assets/abef3c56-3806-43a9-8d24-e64601412078" />
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Features
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+* **Interactive Graph Visualization:** Uses `@xyflow/react` to display the road network (nodes = intersections, edges = roads).
+* **Entity Placement:** Add drivers, a rider (pickup), and a destination by clicking nodes on the graph.
+* **H3-Based Driver Search:** Efficiently finds candidate drivers near the rider using the `h3-js` library (`gridDisk`).
+* **Dijkstra's Algorithm:** Calculates the shortest path based on road network distances.
+* **Route Calculation:** Determines the optimal path: **Driver -> Rider Pickup -> Destination**.
+* **Step-by-Step Visualization:**
+    * Highlights candidate drivers (light green).
+    * Animates the algorithm's search area (yellow).
+    * Highlights the final assigned driver and destination (bright green).
+    * Animates the final shortest path (red).
+* **Event Log:** Displays real-time updates on the simulation process (driver added, rider added, driver assigned, path found, etc.).
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## 🛠️ Tech Stack
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+* **Frontend:** React, Next.js
+* **Graph Visualization:** `@xyflow/react`
+* **Geospatial Indexing:** `h3-js`
+* **Pathfinding:** Custom Dijkstra's Algorithm implementation
+* **Data Preparation (Offline):** Python with `osmnx` (to generate the road network graph from OpenStreetMap)
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🕹️ Usage
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+1.  **Add Drivers:** Click the "Add Driver" button (it will highlight). Then, click any node on the graph to place a driver. Repeat as needed. 
+2.  **Add Rider:** Click the "Add Rider" button. Click a node on the graph to set the rider's pickup location.
+3.  **Set Destination:** Click the "Set Destination" button. Click a *different* node to set the destination. 
+4.  **Find Match & Route:** Click the "Find Match & Route" button.
+    * The simulation will find nearby drivers using H3.
+    * It will calculate the shortest path from each candidate to the rider using Dijkstra's.
+    * The closest driver and the destination will turn bright green.
+    * The algorithm's search area will animate in yellow.
+    * The final route (Driver -> Rider -> Destination) will animate in red.
+5.  **Reset:** Click the "Reset" button to clear all drivers, the rider, the destination, and the path, allowing you to start a new simulation.
+6.  **Event Log:** Check the log box in the top-right corner for messages about the simulation's progress.
