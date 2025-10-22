@@ -6,19 +6,15 @@ const GraphVisualizer = dynamic(() => import('@/components/graph'), {
 
 export default function Home() {
   return (
-    <>
-      <div style={{ backgroundColor: 'white' }}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <div style={{ backgroundColor: 'black' }}>
-            <GraphVisualizer />
-          </div>
-        </div>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ backgroundColor: 'black' }}>
+        <GraphVisualizer />
       </div>
-    </>
+    </div>
   );
 }

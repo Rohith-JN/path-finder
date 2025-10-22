@@ -16,14 +16,14 @@ function LogBox({ messages }) {
   return (
     <div
       style={{
-        height: '100%', // Fill parent
-        overflowY: 'auto', // Allow scrolling
-        backgroundColor: '#222', // Dark background
-        color: '#eee', // Light text
+        height: '100%',
+        overflowY: 'auto',
+        backgroundColor: '#222',
+        color: '#eee',
         padding: '10px',
-        fontFamily: 'monospace', // Use a fixed-width font
+        fontFamily: 'monospace',
         fontSize: '12px',
-        borderLeft: '1px solid #444', // Separator line
+        borderLeft: '1px solid #444',
         borderRadius: '10px',
       }}
     >
@@ -41,7 +41,7 @@ function LogBox({ messages }) {
       ) : (
         // Display messages, newest first
         messages.map((msg, index) => (
-          <div key={index} style={{ marginBottom: '5px' }}>
+          <div key={index} style={{ marginBottom: '5px', marginTop: '5px' }}>
             {msg}
           </div>
         ))
@@ -152,7 +152,6 @@ function GraphVisualizer() {
   const { fitView } = useReactFlow();
 
   const addLog = useCallback((message) => {
-    // Get current time for timestamp
     const timestamp = new Date().toLocaleTimeString();
     setLogMessages((prevLogs) => [`[${timestamp}] ${message}`, ...prevLogs]); // Add new message to the top
   }, []); // useCallback ensures this function doesn't change unnecessarily
@@ -213,12 +212,11 @@ function GraphVisualizer() {
         console.error('Failed to fetch graph data:', err);
         setIsLoading(false);
       });
-  }, [setNodes, setEdges]); // Dependencies
+  }, [setNodes, setEdges]);
 
   // --- Handle Node Clicks ---
   const handleNodeClick = useCallback(
     (event, node) => {
-      // Use useCallback
       if (nodeToH3Map.size === 0) return;
       const key = String(node.id);
       const h3Index = nodeToH3Map.get(key);
@@ -449,11 +447,10 @@ function GraphVisualizer() {
     let style = { background: '#ffffff', opacity: 1, color: 'black' }; // Default
 
     if (isStart || isEnd) {
-      style = { background: '#00ff00', zIndex: 10, color: 'black' }; // Green
+      style = { background: '#00ff00', zIndex: 10, color: 'black  ' }; // Green
     } else if (isPath) {
       style = { background: '#ff0000', zIndex: 10, color: 'white' }; // Red
     } else if (isVisited) {
-      // Restore yellow check
       style = {
         background: '#ffff00',
         opacity: 0.8,
@@ -461,13 +458,13 @@ function GraphVisualizer() {
         color: 'black',
       }; // Yellow
     } else if (isCandidate) {
-      style = { background: '#00ff00', zIndex: 9, color: 'black' }; // Light Green
+      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Green
     } else if (isRiderPickup) {
-      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Purple
+      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Green
     } else if (isDestination) {
-      style = { background: '#00ff00', zIndex: 9, color: 'black' }; // Orange
+      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Green
     } else if (isDriver) {
-      style = { background: '#7f827fff', zIndex: 9, color: 'white' }; // Blue
+      style = { background: '#7f827fff', zIndex: 9, color: 'white' }; // Grey
     }
     return { ...node, style: { ...node.style, ...style } };
   });
@@ -492,7 +489,7 @@ function GraphVisualizer() {
 
   // --- Render JSX ---
   return (
-    <div style={{ height: '800px', width: '100%', border: '1px solid black' }}>
+    <div style={{ height: '100vh', width: '100%', border: '1px solid black' }}>
       <div
         style={{
           position: 'absolute',
