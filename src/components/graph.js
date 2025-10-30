@@ -105,7 +105,6 @@ function GraphVisualizer() {
   const [clickMode, setClickMode] = useState('none');
   const [candidateDrivers, setCandidateDrivers] = useState(new Set());
   const [destinationNode, setDestinationNode] = useState(null); // Shared destination
-  const [tempPickup, setTempPickup] = useState(null); // For 2-step rider add
 
   // --- ADD THIS HELPER ---
   const [logMessages, setLogMessages] = useState([]);
@@ -122,7 +121,7 @@ function GraphVisualizer() {
 
   // --- 1. Load Data and Build Adjacency List ---
   useEffect(() => {
-    fetch('/valapattanam_graph.json') // Using small graph
+    fetch('/manhattan_graph.json') // Using small graph
       .then((res) => res.json())
       .then((data) => {
         const h3Resolution = 9;
@@ -539,7 +538,7 @@ function GraphVisualizer() {
   return (
     <div
       style={{
-        height: '800px',
+        height: '100vh',
         width: '100%',
         border: '1px solid black',
         position: 'relative',

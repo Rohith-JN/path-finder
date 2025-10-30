@@ -12,7 +12,7 @@ export default function LogBox({ messages }) {
         fontFamily: 'monospace',
         fontSize: '12px',
         borderRadius: '5px',
-        backgroundColor: 'rgba(34, 34, 34, 0.59)',
+        backgroundColor: 'rgba(34, 34, 34, 0.93)',
       }}
     >
       <h4
