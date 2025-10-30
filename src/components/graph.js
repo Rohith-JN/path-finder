@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Added useCallback
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -9,120 +9,9 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { latLngToCell, gridDisk } from 'h3-js';
-import styles from '@/styles/Home.module.css'; // Assuming you have button styles here
-
-// Simple LogBox component (can be in the same file or separate)
-function LogBox({ messages }) {
-  return (
-    <div
-      style={{
-        height: '100%',
-        overflowY: 'auto',
-        backgroundColor: '#222',
-        color: '#eee',
-        padding: '10px',
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        borderLeft: '1px solid #444',
-        borderRadius: '10px',
-      }}
-    >
-      <h4
-        style={{
-          marginTop: 0,
-          borderBottom: '1px solid #444',
-          paddingBottom: '5px',
-        }}
-      >
-        Event Log
-      </h4>
-      {messages.length === 0 ? (
-        <p>No events yet...</p>
-      ) : (
-        // Display messages, newest first
-        messages.map((msg, index) => (
-          <div key={index} style={{ marginBottom: '5px', marginTop: '5px' }}>
-            {msg}
-          </div>
-        ))
-      )}
-    </div>
-  );
-}
-
-// --- Dijkstra's Algorithm and Priority Queue ---
-class SimplePriorityQueue {
-  constructor() {
-    this._queue = [];
-  }
-  enqueue(node, priority) {
-    this._queue.push({ node, priority });
-    this.sort();
-  }
-  dequeue() {
-    return this._queue.shift();
-  }
-  isEmpty() {
-    return this._queue.length === 0;
-  }
-  sort() {
-    this._queue.sort((a, b) => a.priority - b.priority);
-  }
-}
-
-function dijkstra(graph, startNode, endNode) {
-  const distances = new Map();
-  const previousNodes = new Map();
-  const pq = new SimplePriorityQueue();
-  const visitedNodesInOrder = [];
-
-  for (const node of graph.keys()) {
-    distances.set(node, Infinity);
-    previousNodes.set(node, null);
-  }
-
-  distances.set(startNode, 0);
-  pq.enqueue(startNode, 0);
-
-  while (!pq.isEmpty()) {
-    const { node: currentNode } = pq.dequeue();
-    if (visitedNodesInOrder.includes(currentNode)) continue;
-    visitedNodesInOrder.push(currentNode);
-    if (currentNode === endNode) break;
-
-    const neighbors = graph.get(currentNode) || [];
-    for (const neighbor of neighbors) {
-      const { node: neighborNode, weight } = neighbor;
-      const newDist = distances.get(currentNode) + weight;
-      if (newDist < distances.get(neighborNode)) {
-        distances.set(neighborNode, newDist);
-        previousNodes.set(neighborNode, currentNode);
-        pq.enqueue(neighborNode, newDist);
-      }
-    }
-  }
-
-  const path = [];
-  let currentNode = endNode;
-  while (currentNode !== null && previousNodes.get(currentNode) !== undefined) {
-    path.unshift(currentNode);
-    currentNode = previousNodes.get(currentNode);
-  }
-  if (path.length > 0 || startNode === endNode) {
-    path.unshift(startNode);
-  }
-
-  const finalDistance = distances.get(endNode);
-
-  return {
-    // Return BOTH the Set (for quick lookup) and Array (for order)
-    pathSet: new Set(path), // Changed key name for clarity
-    pathArray: path, // Added ordered path array
-    visitedNodesInOrder,
-    distance: finalDistance,
-  };
-}
-// --- End Algorithm ---
+import styles from '@/styles/Home.module.css';
+import LogBox from '@/components/logBox';
+import dijkstra from '@/utils/dijkstra';
 
 function GraphVisualizer() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -259,8 +148,6 @@ function GraphVisualizer() {
   ); // Dependencies
 
   // --- Find Match and Route Logic ---
-  // Inside GraphVisualizer component
-
   const handleFindMatchAndRouteClick = useCallback(() => {
     // Use useCallback
     // --- Reset previous visualization state ---
@@ -458,11 +345,11 @@ function GraphVisualizer() {
         color: 'black',
       }; // Yellow
     } else if (isCandidate) {
-      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Green
+      style = { background: '#00ff00', zIndex: 9, color: 'black' }; // Green
     } else if (isRiderPickup) {
-      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Green
+      style = { background: '#00ff00', zIndex: 9, color: 'black' }; // Green
     } else if (isDestination) {
-      style = { background: '#00ff00', zIndex: 9, color: 'white' }; // Green
+      style = { background: '#00ff00', zIndex: 9, color: 'black' }; // Green
     } else if (isDriver) {
       style = { background: '#7f827fff', zIndex: 9, color: 'white' }; // Grey
     }
