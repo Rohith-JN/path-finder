@@ -6,13 +6,13 @@ export default function LogBox({ messages }) {
       style={{
         height: '100%',
         overflowY: 'auto',
-        backgroundColor: '#222',
         color: '#eee',
+        minWidth: '200px',
         padding: '10px',
         fontFamily: 'monospace',
         fontSize: '12px',
-        borderLeft: '1px solid #444',
-        borderRadius: '10px',
+        borderRadius: '5px',
+        backgroundColor: 'rgba(34, 34, 34, 0.59)',
       }}
     >
       <h4
