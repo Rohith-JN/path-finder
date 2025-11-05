@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Added useCallback
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -8,85 +8,10 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { latLngToCell, gridDisk } from 'h3-js'; // Keep gridDisk
+import { latLngToCell, gridDisk } from 'h3-js';
 import styles from '@/styles/Home.module.css';
 import LogBox from './logBox';
-
-// --- Dijkstra's Algorithm and Priority Queue ---
-class SimplePriorityQueue {
-  constructor() {
-    this._queue = [];
-  }
-  enqueue(node, priority) {
-    this._queue.push({ node, priority });
-    this.sort();
-  }
-  dequeue() {
-    return this._queue.shift();
-  }
-  isEmpty() {
-    return this._queue.length === 0;
-  }
-  sort() {
-    this._queue.sort((a, b) => a.priority - b.priority);
-  }
-}
-
-function dijkstra(graph, startNode, endNode) {
-  const distances = new Map();
-  const previousNodes = new Map();
-  const pq = new SimplePriorityQueue();
-  const visitedNodesInOrder = [];
-
-  for (const node of graph.keys()) {
-    distances.set(node, Infinity);
-    previousNodes.set(node, null);
-  }
-
-  distances.set(startNode, 0);
-  pq.enqueue(startNode, 0);
-
-  while (!pq.isEmpty()) {
-    const { node: currentNode } = pq.dequeue();
-    if (visitedNodesInOrder.includes(currentNode)) continue;
-    visitedNodesInOrder.push(currentNode);
-    if (currentNode === endNode) break;
-
-    const neighbors = graph.get(currentNode) || [];
-    for (const neighbor of neighbors) {
-      const { node: neighborNode, weight } = neighbor;
-      const newDist = distances.get(currentNode) + weight;
-      if (newDist < distances.get(neighborNode)) {
-        distances.set(neighborNode, newDist);
-        previousNodes.set(neighborNode, currentNode);
-        pq.enqueue(neighborNode, newDist);
-      }
-    }
-  }
-
-  const path = []; // This is the ordered path array
-  let currentNode = endNode;
-  while (currentNode !== null && previousNodes.get(currentNode) !== undefined) {
-    path.unshift(currentNode);
-    currentNode = previousNodes.get(currentNode);
-  }
-  if (
-    (path.length > 0 && path[0] !== startNode) ||
-    (path.length === 0 && startNode === endNode)
-  ) {
-    path.unshift(startNode);
-  }
-
-  const finalDistance = distances.get(endNode);
-
-  return {
-    pathSet: new Set(path), // Keep Set for compatibility
-    pathArray: path, // <-- RETURN THE ORDERED ARRAY
-    visitedNodesInOrder,
-    distance: finalDistance,
-  };
-}
-// --- End Algorithm ---
+import dijkstra from '@/utils/dijkstra';
 
 function GraphVisualizer() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -121,7 +46,7 @@ function GraphVisualizer() {
 
   // --- 1. Load Data and Build Adjacency List ---
   useEffect(() => {
-    fetch('/manhattan_graph.json') // Using small graph
+    fetch('/sperryville_graph.json') // Using small graph
       .then((res) => res.json())
       .then((data) => {
         const h3Resolution = 9;
